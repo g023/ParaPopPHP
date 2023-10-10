@@ -77,7 +77,13 @@ if (!empty($argv[1])) {
     $pPHP = new ppPHP();
     $pPHP->commands = $commands;
 
-    $pPHP->run();
+    // $pPHP->run(true); // stream out results
+    $result = $pPHP->run(); // return results
+
+    echo "\r\n\r\n";
+    echo "result:\r\n";
+    print_r($result);
+    
 }
 
 

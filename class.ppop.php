@@ -37,9 +37,11 @@ class ppPHP
         ];
     }
 
-    public function run()
+    public function run($echo_out=false)
     {
         $processes = [];
+
+        $process_outputs = [];
 
         foreach ($this->commands as $command) {
             $processes[] = $this->launchProcess($command);
@@ -47,14 +49,21 @@ class ppPHP
 
         $processesFinished = 0;
         while ($processesFinished < count($processes)) {
-            foreach ($processes as $process) {
+            foreach ($processes as $key => $process) {
                 // if we have a resource to read
                 if(is_resource($process))
                 {
                     
                     $output = fread($process, 4096);
                     if (!empty($output)) {
-                        echo $output . "\r\n";
+                        if ($echo_out)
+                            echo $output . "\r\n";
+
+                        if (!isset($process_outputs[$key])) {
+                            $process_outputs[$key] = '';
+                        }
+
+                        $process_outputs[$key] .= $output;
                     }
 
                     if (feof($process)) {
@@ -64,6 +73,8 @@ class ppPHP
                 }
             }
         }
+
+        return $process_outputs;
     }
 
     private function launchProcess($command)
